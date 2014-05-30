@@ -10,6 +10,9 @@ namespace MultiObjectiveEA
     {
         static void Main(string[] args)
         {
+            Parser parser = new Parser();
+            Parameters evoParams =  parser.getParameters("opt.parametros.txt");
+            MultiObjectiveEA ea = new MultiObjectiveEA(evoParams);
         }
     }
 }

@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace MultiObjectiveEA
 {
-    class Population
+    class MultiObjectiveEA : EvolutionaryAlgorithm
     {
-        List<Dna> population;
+        public MultiObjectiveEA(int alpha, Parameters p) : base(p)
+        {
+            
+        }
     }
 }

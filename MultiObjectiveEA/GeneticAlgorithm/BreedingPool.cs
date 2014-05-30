@@ -9,5 +9,10 @@ namespace MultiObjectiveEA
     class BreedingPool
     {
         List<Dna> elite;
+
+        public BreedingPool(int breedingSize)
+        {
+            elite = new List<Dna>(breedingSize);
+        }
     }
 }

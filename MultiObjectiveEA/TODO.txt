@@ -1,0 +1,19 @@
+﻿List of things to do:
+
+*************	DONE	****************
+1. Make randoms DNA 
+	1.1	Random sort the cities
+	1.2	Generate a DNA from a list of cities
+	1.3 Validate DNA has a valid travel
+
+2. Populate at the beginning
+
+3. Evaluate DNA's
+	3.1 Evaluate distance
+	3.2 Evaluate dangerousness
+
+
+****************************************
+
+4. Generate non-dominance ranking
+	4.1 Evaluate number of levels of dominances (Use transitivity) 

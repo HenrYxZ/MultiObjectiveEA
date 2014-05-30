@@ -41,15 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BreedingPool.cs" />
-    <Compile Include="Dna.cs" />
-    <Compile Include="EvolutionaryAlgorithm.cs" />
-    <Compile Include="Population.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="GeneticAlgorithm\BreedingPool.cs" />
+    <Compile Include="GeneticAlgorithm\Dna.cs" />
+    <Compile Include="GeneticAlgorithm\EvolutionaryAlgorithm.cs" />
+    <Compile Include="GeneticAlgorithm\Population.cs" />
+    <Compile Include="MultiObjectiveEA.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
