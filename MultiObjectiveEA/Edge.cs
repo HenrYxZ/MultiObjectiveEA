@@ -49,5 +49,10 @@ namespace MultiObjectiveEA
             this.danger = dang;
         }
 
+        public override string ToString()
+        {
+            return "C" + this.vertices[0] + " -> " + "C" + this.vertices[1];
+        }
+
     }
 }

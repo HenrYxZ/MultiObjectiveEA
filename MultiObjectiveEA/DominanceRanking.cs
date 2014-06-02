@@ -9,6 +9,13 @@ namespace MultiObjectiveEA
     class DominanceRanking
     {
         List<DominanceLevel> levels;
+        int currentGeneration;
+
+        public int CurrentGeneration
+        {
+            get { return currentGeneration; }
+            set { currentGeneration = value; }
+        }
 
         public List<DominanceLevel> Levels
         {
@@ -16,9 +23,10 @@ namespace MultiObjectiveEA
             set { levels = value; }
         }
 
-        public DominanceRanking(int alpha)
+        public DominanceRanking(int alpha, int currentGen)
         {
             this.levels = new List<DominanceLevel>(alpha);
+            this.currentGeneration = currentGen;
         }
     }
 }

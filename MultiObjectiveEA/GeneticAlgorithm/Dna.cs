@@ -11,19 +11,18 @@ namespace MultiObjectiveEA
         List<Edge> edges;
         Fitness fitness;
 
+        public List<Edge> Edges
+        {
+            get { return edges; }
+            set { edges = value; }
+        }
+
         public Fitness Fitness
         {
             get 
             {   if(fitness == null)
                 {
-                    int totalDistance = 0;
-                    int totalDanger = 0;
-                    foreach (Edge edge in edges)
-                    {
-                        totalDanger -= edge.Danger;
-                        totalDistance -= edge.Distance;
-                    }
-                    this.fitness = new Fitness(totalDistance, totalDanger);
+                    evaluate();
                 }
                 return fitness; 
             }
@@ -34,59 +33,46 @@ namespace MultiObjectiveEA
         {
             int numberOfCities = 20;
             edges = new List<Edge>(numberOfCities);
-            setRandomEdges(numberOfCities);
         }
 
         public Dna(int stringLength)
         {
             int numberOfCities = stringLength;
             edges = new List<Edge>(numberOfCities);
-            setRandomEdges(numberOfCities);
         }
 
         public void mutate()
         {
-
+            // TODO: Mutate Dna
         }
 
-        public Action<Edge> createEdge(int cityA, int cityB);
-
-        private void setRandomEdges(int numberOfCities)
+        private void evaluate()
         {
-            List<int> cities = new List<int>();
-            for (int i = 0; i < numberOfCities; i++)
+            int totalDistance = 0;
+            int totalDanger = 0;
+            foreach (Edge edge in edges)
             {
-                cities.Add(i + 1);
+                totalDanger -= edge.Danger;
+                totalDistance -= edge.Distance;
             }
-            /* shuffledCities is a list for the random order of the travel, for example
-             [3 4 1 5 9 2 6 8 7] means c3 -> c4 -> c1 ... -> c7 */
-            int[] shuffledCities = new int[numberOfCities];
-            Random r = new Random();
-
-            shuffledCities[0] = chooseRandomCity(cities, r);
-            shuffledCities[1] = chooseRandomCity(cities, r);
-
-
-            createEdge(shuffledCities[0], shuffledCities[1]);
-
-            for (int i = 1; i < numberOfCities; i++)
-            {
-                int city = chooseRandomCity(cities, r);
-                if (i == numberOfCities - 1)
-                    createEdge(city, 1);
-                else
-                    createEdge(edges[i - 1].Vertices[1], city);
-            }
+            this.fitness = new Fitness(totalDistance, totalDanger);
         }
 
-        private int chooseRandomCity(List<int> cities, Random r)
+        public override string ToString()
         {
-            // Gets a random city and removes it from the list
-            int index = r.Next(cities.Count);
-            int city = cities[index];
-            cities.RemoveAt(index);
-            return city;
-        }   
+            String answer = "DNA: \n";
+            for (int i = 0; i < edges.Count; i++)
+            {
+                answer += edges.ToString();
+            }
+            answer += "\n";
+            answer += "total distance = " + Fitness.distance * -1;
+            answer += "\n";
+            answer += "total danger = " + Fitness.danger * -1;
+            answer += "\n";
+            return answer;
+        }
+          
     }
 
     public class Fitness 
@@ -100,6 +86,7 @@ namespace MultiObjectiveEA
             distance = dist;
             danger = dang;
             // TODO: Normalized fitness!
+            total = dist + dang;
         }
     }
 

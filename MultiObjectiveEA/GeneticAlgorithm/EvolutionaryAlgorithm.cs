@@ -14,6 +14,7 @@ namespace MultiObjectiveEA
         protected Dna bestDna;
         protected Population population;
         protected BreedingPool breedingPool;
+        protected int currentGeneration;
 
 
         public Parameters EvoParams
@@ -50,24 +51,115 @@ namespace MultiObjectiveEA
         }
 
         //      Methods
-        public void populate()
+        public virtual void populate()
         {
-            Population = new Population(evoParams.pop);
+            bool empty = false;
+            Population = new Population(evoParams.pop, empty);
         }
 
-        public virtual void selection()
+        public virtual void select()
         {
-            population.evaluate();
+            
         }
 
-        public virtual void crossover()
+        public virtual void reproduce()
+        {
+            bool empty = true;
+            Population newPopulation = new Population(evoParams.pop, empty);
+            init();
+            this.population = newPopulation;
+            Random xover = new Random();
+            // generates pairs of parents and their child
+            // the last with the first
+
+            //pairs
+            Random index = new Random();
+            List<DnaPair> Parents = new List<DnaPair>();
+            int pos;
+            while (Parents.Count < breedingPool.Count / 2)
+            {
+                pos = index.Next(breedingPool.Count);
+                Dna x = breedingPool.get(pos);
+                //breedingPool.removeAt(pos);
+
+                pos = index.Next(breedingPool.Count);
+                Dna y = breedingPool.get(pos);
+                //breedingPool.removeAt(pos);
+
+                DnaPair p = new DnaPair(x, y);
+                Parents.Add(p);
+            }
+
+            int numberOfCities = 20;
+
+            foreach (DnaPair p in Parents)
+            {
+                if (xover.NextDouble() <= evoParams.xover)
+                {
+                    newPopulation.add(crossover(p.x, p.y));
+                    newPopulation.add(crossover(p.y, p.x));
+                    if (xover.Next(2) == 1)
+                    {   // Copy parents
+                        newPopulation.add(p.x);
+                        newPopulation.add(p.y);
+                    }
+                    else
+                    {   // Generate new dna's
+                        Dna newDnaX = new Dna();
+                        Dna newDnaY = new Dna();
+                        newPopulation.setRandomEdges(numberOfCities, newDnaX);
+                        newPopulation.setRandomEdges(numberOfCities, newDnaY);
+                        newPopulation.add(newDnaX);
+                        newPopulation.add(newDnaY);
+                    }
+                }
+                else
+                {
+                    newPopulation.add(p.x);
+                    newPopulation.add(p.y);
+                    Dna newDnaX = new Dna();
+                    Dna newDnaY = new Dna();
+                    newPopulation.setRandomEdges(numberOfCities, newDnaX);
+                    newPopulation.setRandomEdges(numberOfCities, newDnaY);
+                    newPopulation.add(newDnaX);
+                    newPopulation.add(newDnaY);
+                }
+            }
+
+            // Make sure we don't remove the bestDna
+            newPopulation.add(bestDna);
+            while (newPopulation.Count > evoParams.pop)
+                newPopulation.removeAt(0);
+            population = newPopulation;
+        }
+
+        public virtual Dna crossover(Dna x, Dna y)
+        {
+            return null;
+        }
+
+        public void mutate()
+        {
+            for (int i = 0; i < population.Dnas.Count; i++)
+            {
+                mutate(population.Dnas[i]);
+            }
+        }
+
+        public virtual void mutate(Dna dna)
         {
 
         }
 
-        public virtual void mutation()
+        public virtual void run(bool slowInfo)
         {
 
+        }
+
+        public virtual void init()
+        {
+            // Initialize the EA with the context parameters
+            // for the current Generation
         }
 
     }
@@ -82,6 +174,18 @@ namespace MultiObjectiveEA
             pop = p;
             xover = x;
             mut = m;
+        }
+    }
+
+    struct DnaPair
+    {
+        public Dna x;
+        public Dna y;
+
+        public DnaPair (Dna x1, Dna y1)
+        {
+            this.x = x1;
+            this.y = y1;
         }
     }
 

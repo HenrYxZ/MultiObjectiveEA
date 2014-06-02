@@ -10,11 +10,131 @@ namespace MultiObjectiveEA
     {
         int alpha;
         DominanceRanking ranking;
+        int[][] distances;
+        int[][] dangers;
+        RealTimeInfo realTimeInfo;
+        InfoWriter infoWriter;
+
+        internal RealTimeInfo RealTimeInfo
+        {
+            get { return realTimeInfo; }
+            set { realTimeInfo = value; }
+        }
+
+        public int[][] Distances
+        {
+            get { return distances; }
+            set { distances = value; }
+        }
+
+        public int[][] Dangers
+        {
+            get { return dangers; }
+            set { dangers = value; }
+        }
+
+        // Constructor
 
         public MultiObjectiveEA(MultiObjParams p) : base(p.evoParams)
         {
             this.alpha = p.alpha;
-            this.ranking = new DominanceRanking(p.alpha);
+        }
+
+        // Methods
+
+        public override void select()
+        {
+            generateDominanceRanking();
+            breedingPool.add(this.ranking);
+        }
+
+        public override Dna crossover(Dna x, Dna y)
+        {
+            Dna newDna = new Dna();
+            // -1 for visited, 0 otherwise
+            int[] visitedCities = new int[x.Edges.Count];
+            Random r = new Random();
+            int pivot = r.Next(visitedCities.Length);
+            for (int i = 0; i < pivot; i++)
+			{
+                visitedCities[x.Edges[i].Vertices[0]] = -1;
+                newDna.Edges.Add(x.Edges[i]);
+			}
+            visitedCities[newDna.Edges[newDna.Edges.Count - 1].Vertices[1]] = -1;
+            int[] restOrder = new int[visitedCities.Length - pivot];
+            int counter = 0;
+            for (int i = 0; i < y.Edges.Count; i++)
+            {
+                int currentOriginVertex = y.Edges[i].Vertices[0];
+                if(visitedCities[currentOriginVertex] == 0)
+                {
+                    restOrder[counter] = currentOriginVertex;
+                    counter++;
+                    visitedCities[currentOriginVertex] = -1;
+                }
+            }
+
+            for (int i = 0; i < restOrder.Length-1; i++)
+			{
+                newDna.Edges.Add(this.population.getEdge(restOrder[i], restOrder[i + 1]));
+			}
+            newDna.Edges.Add(this.population.getEdge(restOrder[restOrder.Length-1], restOrder[0]));
+            
+            return newDna;
+        }
+
+        public override void mutate(Dna dna)
+        {
+            Random r = new Random();
+            int pivot1 = r.Next(dna.Edges.Count);
+            int pivot2 = r.Next(dna.Edges.Count);
+            while(pivot2 == pivot1)
+                pivot2 = r.Next(dna.Edges.Count);
+
+            // Swap the cities
+            int aux = dna.Edges[pivot1].Vertices[0];
+            dna.Edges[pivot1].Vertices[0] = dna.Edges[pivot2].Vertices[0];
+            if (pivot1 == 0)
+                dna.Edges[dna.Edges.Count - 1].Vertices[1] = dna.Edges[pivot2].Vertices[0];
+            else
+                dna.Edges[pivot1-1].Vertices[1] = dna.Edges[pivot2].Vertices[0];
+
+            dna.Edges[pivot2].Vertices[0] = aux;
+            if (pivot2 == 0)
+                dna.Edges[dna.Edges.Count - 1].Vertices[1] = aux;
+            else
+                dna.Edges[pivot2 - 1].Vertices[1] = aux;
+
+
+        }
+
+        public override void run(bool slowInfo)
+        {
+            string output = "rutas.out";
+            realTimeInfo = new RealTimeInfo(slowInfo);
+            infoWriter = new InfoWriter(output);
+
+            populate();
+            
+            for (int currentGen = 0; currentGen < evoParams.gen; currentGen++)
+            {
+                this.currentGeneration = currentGen;
+                population.GenerationNumber = currentGen;
+                population.evaluate();
+                realTimeInfo.show(population);
+
+                select();
+                infoWriter.write(this.ranking);
+
+                reproduce();
+                mutate();
+            }
+        }
+
+        public override void init()
+        {
+            population.Distances = this.distances;
+            population.Dangers = this.dangers;
         }
 
         public void generateDominanceRanking()
@@ -24,19 +144,19 @@ namespace MultiObjectiveEA
             distanceSortedDnas.OrderByDescending(x => x.Fitness.distance);
             dangerSortedDnas.OrderByDescending(x => x.Fitness.danger);
 
-            this.ranking = new DominanceRanking(this.alpha);
+            this.ranking = new DominanceRanking(this.alpha, this.currentGeneration);
 
             for (int i = 0; i < this.alpha; i++)
             {
                 // Gets all non-dominated Dnas for this level in the ranking
-                this.ranking.Levels[i] = dominatedByX(distanceSortedDnas, dangerSortedDnas);
+                this.ranking.Levels[i] = dominatedByX(distanceSortedDnas, dangerSortedDnas, i);
             }
         }
 
-        private DominanceLevel dominatedByX(List<Dna> xSortedDnas, List<Dna> ySortedDnas)
+        private DominanceLevel dominatedByX(List<Dna> xSortedDnas, List<Dna> ySortedDnas, int lvl)
         {
             // Returns the list of the first non-dominated level
-            DominanceLevel level = new DominanceLevel();
+            DominanceLevel level = new DominanceLevel(lvl);
 
             // This maps the index from the x list to the y list
             // it's good to store this since we may use the mapping a lot
@@ -73,10 +193,10 @@ namespace MultiObjectiveEA
         public Parameters evoParams;
         public int alpha;
 
-        public MultiObjParams()
+        public MultiObjParams(Parameters evoP, int a)
         {
-            evoParams = new Parameters();
-            alpha = 0;
+            evoParams = evoP;
+            alpha = a;
         }
     }
 }
