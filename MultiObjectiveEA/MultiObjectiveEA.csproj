@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DominanceLevel.cs" />
+    <Compile Include="DominanceRanking.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="GeneticAlgorithm\BreedingPool.cs" />
     <Compile Include="GeneticAlgorithm\Dna.cs" />

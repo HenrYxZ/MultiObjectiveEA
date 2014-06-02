@@ -16,8 +16,8 @@ namespace MultiObjectiveEA
             get 
             {   if(fitness == null)
                 {
-                    double totalDistance = 0;
-                    double totalDanger = 0;
+                    int totalDistance = 0;
+                    int totalDanger = 0;
                     foreach (Edge edge in edges)
                     {
                         totalDanger -= edge.Danger;
@@ -49,6 +49,8 @@ namespace MultiObjectiveEA
 
         }
 
+        public Action<Edge> createEdge(int cityA, int cityB);
+
         private void setRandomEdges(int numberOfCities)
         {
             List<int> cities = new List<int>();
@@ -65,15 +67,15 @@ namespace MultiObjectiveEA
             shuffledCities[1] = chooseRandomCity(cities, r);
 
 
-            this.edges[0] = new Edge(shuffledCities[0], shuffledCities[1]);
+            createEdge(shuffledCities[0], shuffledCities[1]);
 
             for (int i = 1; i < numberOfCities; i++)
             {
                 int city = chooseRandomCity(cities, r);
                 if (i == numberOfCities - 1)
-                    edges[i] = new Edge(city, 1);
+                    createEdge(city, 1);
                 else
-                    edges[i] = new Edge(edges[i - 1].Vertices[1], city);
+                    createEdge(edges[i - 1].Vertices[1], city);
             }
         }
 
@@ -89,13 +91,15 @@ namespace MultiObjectiveEA
 
     public class Fitness 
     {
-        public double distance;
-        public double danger;
+        public int distance;
+        public int danger;
+        public int total;
 
-        public Fitness(double dist, double dang)
+        public Fitness(int dist, int dang)
         {
             distance = dist;
             danger = dang;
+            // TODO: Normalized fitness!
         }
     }
 

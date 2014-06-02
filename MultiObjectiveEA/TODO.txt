@@ -12,8 +12,18 @@
 	3.1 Evaluate distance
 	3.2 Evaluate dangerousness
 
+4. Generate non-dominance ranking
+	4.1 Evaluate number of levels of dominances (Use transitivity)
 
 ****************************************
+// TODO: Normalized fitness!
 
-4. Generate non-dominance ranking
-	4.1 Evaluate number of levels of dominances (Use transitivity) 
+5. Parse information of the cities
+
+7. Crossover
+
+8. Mutation
+
+9. Run simulation
+	9.1 Show statistics
+

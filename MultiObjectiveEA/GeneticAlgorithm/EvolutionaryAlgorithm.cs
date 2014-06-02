@@ -14,7 +14,6 @@ namespace MultiObjectiveEA
         protected Dna bestDna;
         protected Population population;
         protected BreedingPool breedingPool;
-        protected Statistics stats;
 
 
         public Parameters EvoParams
@@ -41,19 +40,12 @@ namespace MultiObjectiveEA
             set { breedingPool = value; }
         }
 
-        public Statistics Stats
-        {
-            get { return stats; }
-            set { stats = value; }
-        }
-
 
 
         //      Constructor
         public EvolutionaryAlgorithm(Parameters evoParams)
         {
             this.evoParams = evoParams;
-            this.stats = new Statistics();
 
         }
 
@@ -65,7 +57,7 @@ namespace MultiObjectiveEA
 
         public virtual void selection()
         {
-
+            population.evaluate();
         }
 
         public virtual void crossover()
@@ -80,7 +72,7 @@ namespace MultiObjectiveEA
 
     }
 
-    struct Parameters
+    public struct Parameters
     {
         public int gen, pop;
         public double xover, mut;
@@ -93,18 +85,4 @@ namespace MultiObjectiveEA
         }
     }
 
-    struct Statistics
-    {
-        public double totalFitness;
-        public double totalDistance;
-        public double totalDanger;
-
-        public Statistics()
-        {
-            totalFitness = 0;
-            totalDistance = 0;
-            totalDanger = 0;
-        }
-
-    }
 }
