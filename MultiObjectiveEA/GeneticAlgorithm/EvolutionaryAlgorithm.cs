@@ -118,8 +118,6 @@ namespace MultiObjectiveEA
                 }
             }
 
-            // Make sure we don't remove the bestDna
-            newPopulation.add(bestDna);
             while (newPopulation.Count > evoParams.pop)
                 newPopulation.removeAt(0);
             population = newPopulation;

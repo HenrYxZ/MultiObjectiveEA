@@ -95,7 +95,7 @@ namespace MultiObjectiveEA
                 newDna.Edges.Add(new Edge(restOrder[i] + 1, restOrder[i + 1] + 1));
 			}
             newDna.Edges.Add(new Edge(restOrder[restOrder.Length-1] + 1, restOrder[0] + 1));
-            
+            newDna.evaluate(distances, dangers);
             return newDna;
         }
 
@@ -120,7 +120,7 @@ namespace MultiObjectiveEA
                 dna.Edges[dna.Edges.Count - 1].Vertices[1] = aux;
             else
                 dna.Edges[pivot2 - 1].Vertices[1] = aux;
-
+            dna.evaluate(distances, dangers);
 
         }
 

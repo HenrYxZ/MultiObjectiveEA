@@ -46,8 +46,8 @@ namespace MultiObjectiveEA
         {
             for (int i = 0; i < dnas.Capacity; i++)
             {
-                Dna newDna = new Dna();
-                dnas.Add(newDna);
+                
+                dnas.Add(new Dna());
             }
         }
 
