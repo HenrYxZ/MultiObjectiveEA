@@ -10,6 +10,7 @@ namespace MultiObjectiveEA
     {
         List<Dna> dnas;
         int level;
+        public int Count { get { return dnas.Count; } }
 
         public List<Dna> Dnas
         {
@@ -21,6 +22,7 @@ namespace MultiObjectiveEA
         public DominanceLevel(int lvl)
         {
             this.level = lvl;
+            dnas = new List<Dna>();
         }
 
         public void add(Dna dna)

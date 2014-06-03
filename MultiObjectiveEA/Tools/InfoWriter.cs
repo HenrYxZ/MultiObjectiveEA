@@ -19,7 +19,7 @@ namespace MultiObjectiveEA
 
         public InfoWriter(string filePath)
         {
-
+            this.filePath = filePath;
         }
 
         public void write(DominanceRanking ranking)

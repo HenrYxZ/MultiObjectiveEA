@@ -11,6 +11,8 @@ namespace MultiObjectiveEA
         List<DominanceLevel> levels;
         int currentGeneration;
 
+        public int Count { get { int total = 0; foreach (DominanceLevel d in levels) total += d.Count; return total; } }
+
         public int CurrentGeneration
         {
             get { return currentGeneration; }

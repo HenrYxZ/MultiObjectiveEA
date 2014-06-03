@@ -36,5 +36,10 @@ namespace MultiObjectiveEA
         {
             elite.RemoveAt(index);
         }
+
+        public void add(Dna dna)
+        {
+            elite.Add(dna);
+        }
     }
 }

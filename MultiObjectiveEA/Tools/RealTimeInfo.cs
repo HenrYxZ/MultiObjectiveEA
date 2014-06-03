@@ -8,15 +8,17 @@ namespace MultiObjectiveEA
 {
     class RealTimeInfo
     {
-        bool slowInfo = false;
+        int option;
 
-        public RealTimeInfo(bool slowInfo)
+        public RealTimeInfo(int opt)
         {
-            this.slowInfo = slowInfo;
+            this.option = opt;
         }
 
         public void show(Population p)
         {
+            if (this.option == 1)
+                return;
             Statistics stats = p.Stats;
            
             String s = "In generation {0} stats are:\n" +
@@ -34,7 +36,7 @@ namespace MultiObjectiveEA
             Console.WriteLine("Worst DNA distance" + stats.max.distance);
             Console.WriteLine("Worst DNA danger" + stats.max.danger);
 
-            if(slowInfo)
+            if(this.option == 3)
                 // Time to look at the output
                 System.Threading.Thread.Sleep(60);
         }

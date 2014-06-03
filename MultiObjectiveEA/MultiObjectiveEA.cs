@@ -45,7 +45,23 @@ namespace MultiObjectiveEA
         public override void select()
         {
             generateDominanceRanking();
-            breedingPool.add(this.ranking);
+            int breedingSize = this.ranking.Count;
+            if(breedingSize > this.evoParams.pop/2) 
+            {
+                breedingPool = new BreedingPool(breedingSize);
+                breedingPool.add(this.ranking);
+            }
+            else
+            {
+                breedingPool = new BreedingPool(this.evoParams.pop / 2);
+                int counter = 0;
+                while(breedingPool.Count < this.evoParams.pop / 2)
+                {
+                    breedingPool.add(this.population.Dnas[counter]);
+                    counter++;
+                }
+            }
+            
         }
 
         public override Dna crossover(Dna x, Dna y)
@@ -57,15 +73,15 @@ namespace MultiObjectiveEA
             int pivot = r.Next(visitedCities.Length);
             for (int i = 0; i < pivot; i++)
 			{
-                visitedCities[x.Edges[i].Vertices[0]] = -1;
+                visitedCities[x.Edges[i].Vertices[0] - 1] = -1;
                 newDna.Edges.Add(x.Edges[i]);
 			}
-            visitedCities[newDna.Edges[newDna.Edges.Count - 1].Vertices[1]] = -1;
+            visitedCities[newDna.Edges[newDna.Edges.Count - 1].Vertices[1] - 1] = -1;
             int[] restOrder = new int[visitedCities.Length - pivot];
             int counter = 0;
             for (int i = 0; i < y.Edges.Count; i++)
             {
-                int currentOriginVertex = y.Edges[i].Vertices[0];
+                int currentOriginVertex = y.Edges[i].Vertices[0] - 1;
                 if(visitedCities[currentOriginVertex] == 0)
                 {
                     restOrder[counter] = currentOriginVertex;
@@ -76,9 +92,9 @@ namespace MultiObjectiveEA
 
             for (int i = 0; i < restOrder.Length-1; i++)
 			{
-                newDna.Edges.Add(this.population.getEdge(restOrder[i], restOrder[i + 1]));
+                newDna.Edges.Add(new Edge(restOrder[i] + 1, restOrder[i + 1] + 1));
 			}
-            newDna.Edges.Add(this.population.getEdge(restOrder[restOrder.Length-1], restOrder[0]));
+            newDna.Edges.Add(new Edge(restOrder[restOrder.Length-1] + 1, restOrder[0] + 1));
             
             return newDna;
         }
@@ -108,11 +124,13 @@ namespace MultiObjectiveEA
 
         }
 
-        public override void run(bool slowInfo)
+        public override void run(int option)
         {
             string output = "rutas.out";
-            realTimeInfo = new RealTimeInfo(slowInfo);
+            realTimeInfo = new RealTimeInfo(option);
             infoWriter = new InfoWriter(output);
+
+            this.population = new Population(evoParams.pop);
 
             populate();
             
@@ -120,7 +138,7 @@ namespace MultiObjectiveEA
             {
                 this.currentGeneration = currentGen;
                 population.GenerationNumber = currentGen;
-                population.evaluate();
+                population.evaluate(distances, dangers);
                 realTimeInfo.show(population);
 
                 select();
@@ -129,12 +147,6 @@ namespace MultiObjectiveEA
                 reproduce();
                 mutate();
             }
-        }
-
-        public override void init()
-        {
-            population.Distances = this.distances;
-            population.Dangers = this.dangers;
         }
 
         public void generateDominanceRanking()
@@ -149,7 +161,7 @@ namespace MultiObjectiveEA
             for (int i = 0; i < this.alpha; i++)
             {
                 // Gets all non-dominated Dnas for this level in the ranking
-                this.ranking.Levels[i] = dominatedByX(distanceSortedDnas, dangerSortedDnas, i);
+                this.ranking.Levels.Add(dominatedByX(distanceSortedDnas, dangerSortedDnas, i));
             }
         }
 
@@ -165,14 +177,14 @@ namespace MultiObjectiveEA
             {
                 mapXToY[i] = ySortedDnas.IndexOf(xSortedDnas[i]);
             }*/
-            int minNonDominatedYIndex = ySortedDnas.Count;
+            int minNonDominatedYIndex = ySortedDnas.Count-1;
             for (int j = 0; j < xSortedDnas.Count; j++)
             {
                 Dna currentDna = xSortedDnas[j];
                 int currentDnaYIndex = ySortedDnas.IndexOf(currentDna);
 
                 // CurrentDna that is worse on X has to be better in Y than the last non-dominated Dna
-                if(currentDnaYIndex < minNonDominatedYIndex)
+                if(currentDnaYIndex <= minNonDominatedYIndex && currentDnaYIndex >= 0)
                 {
                     xSortedDnas.RemoveAt(j);
                     ySortedDnas.RemoveAt(minNonDominatedYIndex);
@@ -183,7 +195,7 @@ namespace MultiObjectiveEA
                 if (minNonDominatedYIndex == -1)
                     return level;
             } // end of xSorted list iteration
-            return null;
+            return level;
         }
         
     }

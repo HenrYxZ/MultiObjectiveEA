@@ -51,7 +51,7 @@ namespace MultiObjectiveEA
                 int counter = 0;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    string[] data = line.Split();
+                    string[] data = line.Split(';');
                     matrix[counter] = new int[20];
                     for (int i = counter+2; i < data.Length; i++)
                     {

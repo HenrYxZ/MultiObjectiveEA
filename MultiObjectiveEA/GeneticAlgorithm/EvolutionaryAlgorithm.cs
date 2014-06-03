@@ -53,8 +53,7 @@ namespace MultiObjectiveEA
         //      Methods
         public virtual void populate()
         {
-            bool empty = false;
-            Population = new Population(evoParams.pop, empty);
+            this.population.generateDnas();
         }
 
         public virtual void select()
@@ -64,10 +63,9 @@ namespace MultiObjectiveEA
 
         public virtual void reproduce()
         {
-            bool empty = true;
-            Population newPopulation = new Population(evoParams.pop, empty);
-            init();
+            Population newPopulation = new Population(evoParams.pop);
             this.population = newPopulation;
+
             Random xover = new Random();
             // generates pairs of parents and their child
             // the last with the first
@@ -90,8 +88,6 @@ namespace MultiObjectiveEA
                 Parents.Add(p);
             }
 
-            int numberOfCities = 20;
-
             foreach (DnaPair p in Parents)
             {
                 if (xover.NextDouble() <= evoParams.xover)
@@ -107,8 +103,6 @@ namespace MultiObjectiveEA
                     {   // Generate new dna's
                         Dna newDnaX = new Dna();
                         Dna newDnaY = new Dna();
-                        newPopulation.setRandomEdges(numberOfCities, newDnaX);
-                        newPopulation.setRandomEdges(numberOfCities, newDnaY);
                         newPopulation.add(newDnaX);
                         newPopulation.add(newDnaY);
                     }
@@ -119,8 +113,6 @@ namespace MultiObjectiveEA
                     newPopulation.add(p.y);
                     Dna newDnaX = new Dna();
                     Dna newDnaY = new Dna();
-                    newPopulation.setRandomEdges(numberOfCities, newDnaX);
-                    newPopulation.setRandomEdges(numberOfCities, newDnaY);
                     newPopulation.add(newDnaX);
                     newPopulation.add(newDnaY);
                 }
@@ -151,15 +143,9 @@ namespace MultiObjectiveEA
 
         }
 
-        public virtual void run(bool slowInfo)
+        public virtual void run(int option)
         {
 
-        }
-
-        public virtual void init()
-        {
-            // Initialize the EA with the context parameters
-            // for the current Generation
         }
 
     }
